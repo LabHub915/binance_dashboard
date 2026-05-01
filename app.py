@@ -8,17 +8,17 @@ from flask import Flask, Response, jsonify, render_template, request
 
 from binance_client import (
     create_client,
-    get_all_income_by_day,
-    get_daily_pnl,
     get_futures_account,
-    get_futures_transactions,
-    get_income_history,
     get_order_history,
     get_position_information,
     get_trade_history,
 )
+import database as db
+import sync as data_sync
 
 load_dotenv()
+
+db.init_db()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key")
@@ -180,7 +180,7 @@ def api_orders():
 def api_income():
     try:
         client = get_client()
-        income_type = request.args.get("type")
+        income_type = request.args.get("type") or None
         start = request.args.get("start")
         end = request.args.get("end")
         limit = int(request.args.get("limit", 100))
@@ -192,7 +192,7 @@ def api_income():
         if end:
             end_time = int(datetime.fromisoformat(end).timestamp() * 1000)
 
-        data = get_income_history(
+        data = data_sync.get_merged_income(
             client,
             income_type=income_type,
             start_time=start_time,
@@ -213,14 +213,7 @@ def api_calendar():
         start = request.args.get("start")
         end = request.args.get("end")
 
-        start_time = None
-        end_time = None
-        if start:
-            start_time = int(datetime.fromisoformat(start).timestamp() * 1000)
-        if end:
-            end_time = int(datetime.fromisoformat(end).timestamp() * 1000)
-
-        data = get_daily_pnl(client, start_time=start_time, end_time=end_time)
+        data = data_sync.get_merged_daily_pnl(client, start_date=start, end_date=end)
         return jsonify({"success": True, "data": data})
     except Exception as e:
         traceback.print_exc()
@@ -243,7 +236,7 @@ def api_transactions():
         if end:
             end_time = int(datetime.fromisoformat(end).timestamp() * 1000)
 
-        data = get_futures_transactions(
+        data = data_sync.get_merged_transactions(
             client, start_time=start_time, end_time=end_time, limit=limit
         )
         return jsonify({"success": True, "data": data, "count": len(data)})
@@ -262,30 +255,26 @@ def api_performance():
         account = get_futures_account(client)
         current_balance = account["totalWalletBalance"]
 
-        # Get all transactions (deposits/withdrawals)
-        txs = get_futures_transactions(client, limit=1000)
+        # Get all transactions from SQLite cache (synced fresh first)
+        txs = data_sync.get_merged_transactions_for_performance(client)
         total_deposited = sum(tx["amount"] for tx in txs if tx["type"] == "IN" and tx["status"] == "CONFIRMED")
         total_withdrawn = sum(tx["amount"] for tx in txs if tx["type"] == "OUT" and tx["status"] == "CONFIRMED")
         net_deposited = total_deposited - total_withdrawn
 
-        # Get daily income (all types: PNL + funding + commission)
-        daily_income = get_all_income_by_day(client, limit=1000)
+        # Get daily income from SQLite cache (synced fresh first)
+        daily_income = data_sync.get_merged_all_income_by_day(client)
 
         # Reconstruct equity curve
-        # Group transactions by day
         tx_by_day = {}
         for tx in txs:
             if tx["status"] != "CONFIRMED":
                 continue
-            from datetime import datetime as dt
-
-            day = dt.fromtimestamp(tx["time"] / 1000).strftime("%Y-%m-%d")
+            day = datetime.fromtimestamp(tx["time"] / 1000).strftime("%Y-%m-%d")
             if tx["type"] == "IN":
                 tx_by_day[day] = tx_by_day.get(day, 0) + tx["amount"]
             else:
                 tx_by_day[day] = tx_by_day.get(day, 0) - tx["amount"]
 
-        # Merge daily income and transactions into a single timeline
         all_days = set()
         day_income = {}
         for item in daily_income:
@@ -312,7 +301,6 @@ def api_performance():
                 }
             )
 
-        # Build equity curve
         running_balance = 0
         equity_curve = []
         peak = 0
@@ -335,7 +323,6 @@ def api_performance():
                 {"date": day, "balance": round(running_balance, 2), "peak": round(peak, 2)}
             )
 
-        # Total PNL = unrealized + realized
         total_pnl = current_balance - net_deposited
         roi = (total_pnl / net_deposited * 100) if net_deposited > 0 else 0
 
