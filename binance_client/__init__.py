@@ -239,6 +239,11 @@ def get_futures_transactions(
 ) -> list:
     """Get futures wallet deposit/withdrawal history (transfers between spot and futures)."""
     try:
+        import time as _time
+
+        if start_time is None:
+            start_time = int((_time.time() - 365 * 24 * 60 * 60) * 1000)
+
         txs = client.transfer_history(
             startTime=start_time,
             endTime=end_time,
