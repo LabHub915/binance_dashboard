@@ -1,9 +1,10 @@
 import os
 import traceback
 from datetime import datetime
+from functools import wraps
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
 
 from binance_client import (
     create_client,
@@ -20,42 +21,75 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key")
 
+BASIC_AUTH_USER = os.getenv("BASIC_AUTH_USERNAME", "")
+BASIC_AUTH_PASS = os.getenv("BASIC_AUTH_PASSWORD", "")
+
+
+def check_auth(username, password):
+    return username == BASIC_AUTH_USER and password == BASIC_AUTH_PASS
+
+
+def authenticate():
+    return Response(
+        "Authentication required", 401,
+        {"WWW-Authenticate": 'Basic realm="Binance Dashboard"'},
+    )
+
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not BASIC_AUTH_USER:
+            return f(*args, **kwargs)
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 
 def get_client():
     return create_client()
 
 
 @app.route("/")
+@require_auth
 def index():
     return render_template("index.html")
 
 
 @app.route("/account")
+@require_auth
 def account_page():
     return render_template("account.html")
 
 
 @app.route("/positions")
+@require_auth
 def positions_page():
     return render_template("positions.html")
 
 
 @app.route("/trades")
+@require_auth
 def trades_page():
     return render_template("trades.html")
 
 
 @app.route("/orders")
+@require_auth
 def orders_page():
     return render_template("orders.html")
 
 
 @app.route("/income")
+@require_auth
 def income_page():
     return render_template("income.html")
 
 
 @app.route("/calendar")
+@require_auth
 def calendar_page():
     return render_template("calendar.html")
 
@@ -63,6 +97,7 @@ def calendar_page():
 # ---- API Routes ----
 
 @app.route("/api/account")
+@require_auth
 def api_account():
     try:
         client = get_client()
@@ -74,6 +109,7 @@ def api_account():
 
 
 @app.route("/api/positions")
+@require_auth
 def api_positions():
     try:
         client = get_client()
@@ -85,6 +121,7 @@ def api_positions():
 
 
 @app.route("/api/trades")
+@require_auth
 def api_trades():
     try:
         client = get_client()
@@ -110,6 +147,7 @@ def api_trades():
 
 
 @app.route("/api/orders")
+@require_auth
 def api_orders():
     try:
         client = get_client()
@@ -135,6 +173,7 @@ def api_orders():
 
 
 @app.route("/api/income")
+@require_auth
 def api_income():
     try:
         client = get_client()
@@ -164,6 +203,7 @@ def api_income():
 
 
 @app.route("/api/calendar")
+@require_auth
 def api_calendar():
     try:
         client = get_client()

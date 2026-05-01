@@ -10,6 +10,7 @@ A modern web dashboard for monitoring Binance Futures accounts, built with Flask
 - **Order History** — all order records with status tracking
 - **Income Records** — realized PNL, funding fees, and commission history
 - **PNL Calendar** — ECharts calendar heatmap showing daily profit/loss
+- **Basic Auth** — optional HTTP Basic Authentication for public access
 
 ## Tech Stack
 
@@ -39,7 +40,20 @@ BINANCE_API_KEY=your_api_key_here
 BINANCE_API_SECRET=your_api_secret_here
 BINANCE_TESTNET=true
 FLASK_SECRET_KEY=change-this-in-production
+BASIC_AUTH_USERNAME=admin
+BASIC_AUTH_PASSWORD=change-me
 ```
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `BINANCE_API_KEY` | Yes | — | API key from [Binance](https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072) or [Testnet](https://testnet.binancefuture.com) |
+| `BINANCE_API_SECRET` | Yes | — | API secret paired with the key above |
+| `BINANCE_TESTNET` | No | `true` | `true` = Binance Futures Testnet (no real funds), `false` = live mainnet |
+| `FLASK_SECRET_KEY` | No | `dev-secret-key` | Flask session signing key, change to a random string in production |
+| `BASIC_AUTH_USERNAME` | No | (empty) | Username for HTTP Basic Auth. Leave empty to disable authentication |
+| `BASIC_AUTH_PASSWORD` | No | (empty) | Password for HTTP Basic Auth. Only effective when username is also set |
+
+> **Auth behavior:** When both `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` are set, the browser will prompt for credentials before accessing any page or API. If left empty, all routes are open — suitable for local dev behind a firewall.
 
 ### 3. Run Locally
 
@@ -86,6 +100,17 @@ docker compose up -d
 ├── docker-compose.yml
 └── requirements.txt
 ```
+
+## Public Access
+
+To expose the dashboard on a public IP:
+
+1. Configure Basic Auth credentials in `.env`
+2. Set up port forwarding on your router (external port → your machine's port 5000)
+3. Run with Docker: `docker compose up -d`
+4. Access via `http://<your-public-ip>:5000`, enter the credentials when prompted
+
+For production, consider adding an nginx reverse proxy with SSL (Let's Encrypt).
 
 ## API Endpoints
 
