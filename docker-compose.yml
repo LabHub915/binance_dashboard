@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  binance-dashboard:
+    build: .
+    container_name: binance-dashboard
+    ports:
+      - "5000:5000"
+    environment:
+      - BINANCE_API_KEY=${BINANCE_API_KEY}
+      - BINANCE_API_SECRET=${BINANCE_API_SECRET}
+      - BINANCE_TESTNET=${BINANCE_TESTNET:-true}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-change-this-in-production}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

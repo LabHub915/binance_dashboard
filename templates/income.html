@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Income History - Binance Futures{% endblock %}
+{% block nav_income %}active{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-bold gradient-text mb-1">Income History</h2>
+    <p class="text-slate-400">Historical income records (realized PNL, funding fees, commissions)</p>
+</div>
+
+<div class="glass-card p-6 mb-6">
+    <div class="flex flex-wrap gap-4 items-end">
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Income Type</label>
+            <select id="filter-type" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+                <option value="">All Types</option>
+                <option value="REALIZED_PNL">Realized PNL</option>
+                <option value="FUNDING_FEE">Funding Fee</option>
+                <option value="COMMISSION">Commission</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+            <input type="date" id="filter-start" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">End Date</label>
+            <input type="date" id="filter-end" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Limit</label>
+            <select id="filter-limit" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+        <button onclick="loadIncome()" class="btn-primary text-white text-sm">Apply</button>
+    </div>
+</div>
+
+<div class="glass-card p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Income Records <span id="income-count" class="text-sm text-slate-400"></span></h3>
+        <span id="income-total" class="text-sm font-semibold"></span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="data-table w-full text-sm">
+            <thead>
+                <tr class="text-left">
+                    <th class="py-2">Time</th>
+                    <th class="py-2">Symbol</th>
+                    <th class="py-2">Type</th>
+                    <th class="py-2">Amount</th>
+                    <th class="py-2">Asset</th>
+                </tr>
+            </thead>
+            <tbody id="income-table">
+                <tr><td colspan="5" class="text-center py-8 text-slate-500">
+                    <div class="spinner mx-auto mb-3"></div>Loading...
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/income.js"></script>
+{% endblock %}

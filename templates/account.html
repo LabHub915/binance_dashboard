@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Account - Binance Futures{% endblock %}
+{% block nav_account %}active{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-bold gradient-text mb-1">Account</h2>
+    <p class="text-slate-400">Real-time account balance and information</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="account-summary"></div>
+
+<div class="glass-card p-6">
+    <h3 class="text-lg font-semibold mb-4">Asset Details</h3>
+    <div class="overflow-x-auto">
+        <table class="data-table w-full text-sm">
+            <thead>
+                <tr class="text-left">
+                    <th class="py-2">Asset</th>
+                    <th class="py-2">Wallet Balance</th>
+                    <th class="py-2">Available</th>
+                    <th class="py-2">Unrealized PNL</th>
+                    <th class="py-2">Margin Balance</th>
+                </tr>
+            </thead>
+            <tbody id="assets-table">
+                <tr><td colspan="5" class="text-center py-8 text-slate-500">
+                    <div class="spinner mx-auto mb-3"></div>Loading...
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/account.js"></script>
+{% endblock %}

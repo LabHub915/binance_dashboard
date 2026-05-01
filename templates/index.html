@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Binance Futures{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-bold gradient-text mb-1">Dashboard</h2>
+    <p class="text-slate-400">Overview of your Binance Futures account</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stats-cards">
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Total Margin</p>
+        <p class="text-2xl font-bold" id="stat-margin">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Available Balance</p>
+        <p class="text-2xl font-bold" id="stat-available">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Unrealized PNL</p>
+        <p class="text-2xl font-bold" id="stat-unrealized">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Open Positions</p>
+        <p class="text-2xl font-bold" id="stat-positions">--</p>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="glass-card p-6">
+        <h3 class="text-lg font-semibold mb-4">Asset Allocation</h3>
+        <div id="chart-assets" style="height: 320px;"></div>
+    </div>
+    <div class="glass-card p-6">
+        <h3 class="text-lg font-semibold mb-4">PNL Trend (7 Days)</h3>
+        <div id="chart-pnl-trend" style="height: 320px;"></div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="glass-card p-6">
+        <h3 class="text-lg font-semibold mb-4">Recent Trades</h3>
+        <div class="overflow-x-auto">
+            <table class="data-table w-full text-sm">
+                <thead>
+                    <tr class="text-left">
+                        <th class="py-2">Symbol</th>
+                        <th class="py-2">Side</th>
+                        <th class="py-2">Price</th>
+                        <th class="py-2">Qty</th>
+                        <th class="py-2">PNL</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-trades"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="glass-card p-6">
+        <h3 class="text-lg font-semibold mb-4">Current Positions</h3>
+        <div class="overflow-x-auto">
+            <table class="data-table w-full text-sm">
+                <thead>
+                    <tr class="text-left">
+                        <th class="py-2">Symbol</th>
+                        <th class="py-2">Side</th>
+                        <th class="py-2">Size</th>
+                        <th class="py-2">Entry</th>
+                        <th class="py-2">Mark</th>
+                        <th class="py-2">PNL</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-positions"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

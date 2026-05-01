@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Trade History - Binance Futures{% endblock %}
+{% block nav_trades %}active{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-bold gradient-text mb-1">Trade History</h2>
+    <p class="text-slate-400">Historical trade records with filtering</p>
+</div>
+
+<div class="glass-card p-6 mb-6">
+    <div class="flex flex-wrap gap-4 items-end">
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Symbol</label>
+            <input type="text" id="filter-symbol" placeholder="e.g. BTCUSDT" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-40">
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+            <input type="date" id="filter-start" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">End Date</label>
+            <input type="date" id="filter-end" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block text-xs text-slate-400 mb-1">Limit</label>
+            <select id="filter-limit" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+                <option value="20">20</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <button onclick="loadTrades()" class="btn-primary text-white text-sm">Apply</button>
+    </div>
+</div>
+
+<div class="glass-card p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Trades <span id="trade-count" class="text-sm text-slate-400"></span></h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="data-table w-full text-sm">
+            <thead>
+                <tr class="text-left">
+                    <th class="py-2">Time</th>
+                    <th class="py-2">Symbol</th>
+                    <th class="py-2">Side</th>
+                    <th class="py-2">Price</th>
+                    <th class="py-2">Qty</th>
+                    <th class="py-2">Quote Qty</th>
+                    <th class="py-2">Commission</th>
+                    <th class="py-2">Realized PNL</th>
+                </tr>
+            </thead>
+            <tbody id="trades-table">
+                <tr><td colspan="8" class="text-center py-8 text-slate-500">
+                    <div class="spinner mx-auto mb-3"></div>Loading...
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between mt-4" id="pagination">
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/trades.js"></script>
+{% endblock %}
