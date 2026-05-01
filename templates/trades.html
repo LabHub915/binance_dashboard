@@ -4,62 +4,60 @@
 
 {% block content %}
 <div class="mb-8">
-    <h2 class="text-3xl font-bold gradient-text mb-1">Trade History</h2>
-    <p class="text-slate-400">Historical trade records with filtering</p>
+    <h2 class="text-3xl font-bold gradient-text mb-1" data-i18n="trades_title">Trade History</h2>
+    <p class="text-slate-400" data-i18n="trades_desc">Historical trade records with filtering</p>
 </div>
 
 <div class="glass-card p-6 mb-6">
     <div class="flex flex-wrap gap-4 items-end">
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Symbol</label>
-            <input type="text" id="filter-symbol" placeholder="e.g. BTCUSDT" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-40">
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="trades_filter_symbol">Symbol</label>
+            <input type="text" id="filter-symbol" data-i18n-placeholder="trades_filter_symbol" placeholder="e.g. BTCUSDT" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-40">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="trades_filter_start">Start Date</label>
             <input type="date" id="filter-start" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">End Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="trades_filter_end">End Date</label>
             <input type="date" id="filter-end" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Limit</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="trades_filter_limit">Limit</label>
             <select id="filter-limit" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
                 <option value="20">20</option>
                 <option value="50" selected>50</option>
                 <option value="100">100</option>
             </select>
         </div>
-        <button onclick="loadTrades()" class="btn-primary text-white text-sm">Apply</button>
+        <button onclick="loadTrades()" class="btn-primary text-white text-sm" data-i18n="trades_apply">Apply</button>
     </div>
 </div>
 
 <div class="glass-card p-6">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Trades <span id="trade-count" class="text-sm text-slate-400"></span></h3>
+        <h3 class="text-lg font-semibold">Trade History <span id="trade-count" class="text-sm text-slate-400"></span></h3>
     </div>
     <div class="overflow-x-auto">
         <table class="data-table w-full text-sm">
             <thead>
                 <tr class="text-left">
-                    <th class="py-2">Time</th>
-                    <th class="py-2">Symbol</th>
-                    <th class="py-2">Side</th>
-                    <th class="py-2">Price</th>
-                    <th class="py-2">Qty</th>
-                    <th class="py-2">Quote Qty</th>
-                    <th class="py-2">Commission</th>
-                    <th class="py-2">Realized PNL</th>
+                    <th class="py-2" data-i18n="trades_time">Time</th>
+                    <th class="py-2" data-i18n="table_symbol">Symbol</th>
+                    <th class="py-2" data-i18n="table_side">Side</th>
+                    <th class="py-2" data-i18n="table_price">Price</th>
+                    <th class="py-2" data-i18n="table_qty">Qty</th>
+                    <th class="py-2" data-i18n="trades_quote_qty">Quote Qty</th>
+                    <th class="py-2" data-i18n="trades_commission">Commission</th>
+                    <th class="py-2" data-i18n="trades_realized_pnl">Realized PNL</th>
                 </tr>
             </thead>
             <tbody id="trades-table">
                 <tr><td colspan="8" class="text-center py-8 text-slate-500">
-                    <div class="spinner mx-auto mb-3"></div>Loading...
+                    <div class="spinner mx-auto mb-3"></div><span data-i18n="loading">Loading...</span>
                 </td></tr>
             </tbody>
         </table>
-    </div>
-    <div class="flex justify-between mt-4" id="pagination">
     </div>
 </div>
 {% endblock %}

@@ -1,8 +1,10 @@
 // Trade history page
 
+let lastTradeData = null;
+
 async function loadTrades() {
     const tbody = document.getElementById('trades-table');
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Loading...</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>${t('loading')}</td></tr>`;
 
     const params = new URLSearchParams();
     const symbol = document.getElementById('filter-symbol').value.trim();
@@ -23,28 +25,43 @@ async function loadTrades() {
             return;
         }
 
-        document.getElementById('trade-count').textContent = `(${res.count} records)`;
-
-        if (res.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-500">No trades found</td></tr>';
-        } else {
-            tbody.innerHTML = res.data.map(t => `
-                <tr>
-                    <td class="py-3 text-xs">${formatTime(t.time)}</td>
-                    <td class="py-3 font-medium">${t.symbol}</td>
-                    <td class="py-3"><span class="${t.side === 'BUY' ? 'text-green-400' : 'text-red-400'}">${t.side}</span></td>
-                    <td class="py-3">$${t.price.toFixed(t.price < 1 ? 6 : 2)}</td>
-                    <td class="py-3">${t.qty}</td>
-                    <td class="py-3">$${t.quoteQty.toFixed(2)}</td>
-                    <td class="py-3 text-slate-400">${t.commission} ${t.commissionAsset}</td>
-                    <td class="py-3">${formatUSD(t.realizedPnl)}</td>
-                </tr>
-            `).join('');
-        }
+        lastTradeData = res;
+        renderTrades();
         statusOk();
     } catch (e) {
         statusErr(e.message);
     }
 }
+
+function renderTrades() {
+    const res = lastTradeData;
+    if (!res) return;
+    const tbody = document.getElementById('trades-table');
+
+    document.getElementById('trade-count').textContent = `(${res.count} ${t('trades_records')})`;
+
+    if (res.data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">${t('no_trade_records')}</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = res.data.map(trade => `
+        <tr>
+            <td class="py-3 text-xs">${formatTime(trade.time)}</td>
+            <td class="py-3 font-medium">${trade.symbol}</td>
+            <td class="py-3"><span class="${trade.side === 'BUY' ? 'text-green-400' : 'text-red-400'}">${trade.side === 'BUY' ? t('buy') : t('sell')}</span></td>
+            <td class="py-3">$${trade.price.toFixed(trade.price < 1 ? 6 : 2)}</td>
+            <td class="py-3">${trade.qty}</td>
+            <td class="py-3">$${trade.quoteQty.toFixed(2)}</td>
+            <td class="py-3 text-slate-400">${trade.commission} ${trade.commissionAsset}</td>
+            <td class="py-3">${formatUSD(trade.realizedPnl)}</td>
+        </tr>
+    `).join('');
+}
+
+window.addEventListener('langchange', () => {
+    if (lastTradeData) renderTrades();
+    setLang(currentLang);
+});
 
 document.addEventListener('DOMContentLoaded', loadTrades);

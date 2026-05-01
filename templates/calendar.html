@@ -4,21 +4,21 @@
 
 {% block content %}
 <div class="mb-8">
-    <h2 class="text-3xl font-bold gradient-text mb-1">PNL Calendar</h2>
-    <p class="text-slate-400">Visual calendar showing daily profit and loss</p>
+    <h2 class="text-3xl font-bold gradient-text mb-1" data-i18n="calendar_title">PNL Calendar</h2>
+    <p class="text-slate-400" data-i18n="calendar_desc">Visual calendar showing daily profit and loss</p>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-1">Total PNL (Period)</p>
+        <p class="text-slate-400 text-sm mb-1" data-i18n="calendar_total_pnl">Total PNL (Period)</p>
         <p class="text-3xl font-bold" id="stat-total-pnl">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-1">Best Day</p>
+        <p class="text-slate-400 text-sm mb-1" data-i18n="calendar_best_day">Best Day</p>
         <p class="text-3xl font-bold profit" id="stat-best-day">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-1">Worst Day</p>
+        <p class="text-slate-400 text-sm mb-1" data-i18n="calendar_worst_day">Worst Day</p>
         <p class="text-3xl font-bold loss" id="stat-worst-day">--</p>
     </div>
 </div>
@@ -26,14 +26,14 @@
 <div class="glass-card p-6 mb-6">
     <div class="flex flex-wrap gap-4 items-end mb-6">
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="calendar_filter_start">Start Date</label>
             <input type="date" id="filter-start" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">End Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="calendar_filter_end">End Date</label>
             <input type="date" id="filter-end" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
-        <button onclick="loadCalendar()" class="btn-primary text-white text-sm">Apply</button>
+        <button onclick="loadCalendar()" class="btn-primary text-white text-sm" data-i18n="calendar_apply">Apply</button>
     </div>
     <div id="calendar-chart" style="height: 520px;"></div>
 </div>

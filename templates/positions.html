@@ -4,35 +4,33 @@
 
 {% block content %}
 <div class="mb-8">
-    <h2 class="text-3xl font-bold gradient-text mb-1">Positions</h2>
-    <p class="text-slate-400">Current open positions</p>
+    <h2 class="text-3xl font-bold gradient-text mb-1" data-i18n="positions_title">Positions</h2>
+    <p class="text-slate-400" data-i18n="positions_desc">Current open positions</p>
 </div>
 
 <div class="glass-card p-6">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Open Positions</h3>
-        <button onclick="loadPositions()" class="text-sm text-blue-400 hover:text-blue-300 transition">
-            Refresh
-        </button>
+        <h3 class="text-lg font-semibold" data-i18n="positions_open">Open Positions</h3>
+        <button onclick="loadPositions()" class="text-sm text-blue-400 hover:text-blue-300 transition" data-i18n="refresh">Refresh</button>
     </div>
     <div class="overflow-x-auto">
         <table class="data-table w-full text-sm">
             <thead>
                 <tr class="text-left">
-                    <th class="py-2">Symbol</th>
-                    <th class="py-2">Side</th>
-                    <th class="py-2">Size</th>
-                    <th class="py-2">Entry Price</th>
-                    <th class="py-2">Mark Price</th>
-                    <th class="py-2">Liquidation</th>
-                    <th class="py-2">Leverage</th>
-                    <th class="py-2">Margin Type</th>
-                    <th class="py-2">Unrealized PNL</th>
+                    <th class="py-2" data-i18n="table_symbol">Symbol</th>
+                    <th class="py-2" data-i18n="table_side">Side</th>
+                    <th class="py-2" data-i18n="table_size">Size</th>
+                    <th class="py-2" data-i18n="table_entry">Entry Price</th>
+                    <th class="py-2" data-i18n="table_mark">Mark Price</th>
+                    <th class="py-2" data-i18n="pos_liquidation">Liquidation</th>
+                    <th class="py-2" data-i18n="pos_leverage">Leverage</th>
+                    <th class="py-2" data-i18n="pos_margin_type">Margin Type</th>
+                    <th class="py-2" data-i18n="pos_unrealized_pnl">Unrealized PNL</th>
                 </tr>
             </thead>
             <tbody id="positions-table">
                 <tr><td colspan="9" class="text-center py-8 text-slate-500">
-                    <div class="spinner mx-auto mb-3"></div>Loading...
+                    <div class="spinner mx-auto mb-3"></div><span data-i18n="loading">Loading...</span>
                 </td></tr>
             </tbody>
         </table>

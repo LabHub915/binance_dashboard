@@ -99,6 +99,18 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        .lang-btn {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .lang-btn:hover { background: rgba(148, 163, 184, 0.2); color: #e2e8f0; }
+        .lang-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
     </style>
     {% block head %}{% endblock %}
 </head>
@@ -141,10 +153,18 @@
             </a>
         </nav>
 
-        <div class="pt-4 border-t border-white/5">
+        <div class="pt-4 border-t border-white/5 space-y-3">
+            <!-- Language Switcher -->
+            <div class="px-2">
+                <p class="text-xs text-slate-500 mb-1" data-i18n="lang_label">Language</p>
+                <div class="flex gap-1">
+                    <button onclick="setLang('zh-TW')" class="lang-btn text-xs px-2 py-1 rounded" data-lang="zh-TW">中文</button>
+                    <button onclick="setLang('en')" class="lang-btn text-xs px-2 py-1 rounded" data-lang="en">English</button>
+                </div>
+            </div>
             <div class="text-xs text-slate-500 px-2" id="status-indicator">
                 <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-1"></span>
-                Connecting...
+                <span data-i18n="connecting">Connecting...</span>
             </div>
         </div>
     </aside>
@@ -157,6 +177,7 @@
     <!-- Toast container -->
     <div id="toast-container" class="toast"></div>
 
+    <script src="/static/js/i18n.js"></script>
     <script src="/static/js/app.js"></script>
     {% block scripts %}{% endblock %}
 </body>

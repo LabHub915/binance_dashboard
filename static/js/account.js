@@ -1,5 +1,7 @@
 // Account page
 
+let lastAccountData = null;
+
 async function loadAccount() {
     try {
         const res = await API.get('/api/account');
@@ -8,22 +10,28 @@ async function loadAccount() {
             return;
         }
 
-        const data = res.data;
-        renderSummary(data);
-        renderAssetsTable(data.assets || []);
+        lastAccountData = res.data;
+        renderAccount();
         statusOk();
     } catch (e) {
         statusErr(e.message);
     }
 }
 
+function renderAccount() {
+    const data = lastAccountData;
+    if (!data) return;
+    renderSummary(data);
+    renderAssetsTable(data.assets || []);
+}
+
 function renderSummary(data) {
     const container = document.getElementById('account-summary');
     const cards = [
-        { label: 'Total Wallet Balance', value: formatUSDPlain(data.totalWalletBalance), cls: '' },
-        { label: 'Total Margin Balance', value: formatUSDPlain(data.totalMarginBalance), cls: '' },
-        { label: 'Available Balance', value: formatUSDPlain(data.availableBalance), cls: '' },
-        { label: 'Unrealized PNL', value: data.totalUnrealizedProfit, cls: '', isPnl: true },
+        { label: t('account_total_wallet'), value: formatUSDPlain(data.totalWalletBalance), cls: '' },
+        { label: t('account_total_margin'), value: formatUSDPlain(data.totalMarginBalance), cls: '' },
+        { label: t('account_available'), value: formatUSDPlain(data.availableBalance), cls: '' },
+        { label: t('account_unrealized_pnl'), value: data.totalUnrealizedProfit, cls: '', isPnl: true },
     ];
 
     container.innerHTML = cards.map(c => `
@@ -37,7 +45,7 @@ function renderSummary(data) {
 function renderAssetsTable(assets) {
     const tbody = document.getElementById('assets-table');
     if (assets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">No assets with balance</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">${t('account_no_assets')}</td></tr>`;
         return;
     }
 
@@ -51,5 +59,10 @@ function renderAssetsTable(assets) {
         </tr>
     `).join('');
 }
+
+window.addEventListener('langchange', () => {
+    if (lastAccountData) renderAccount();
+    setLang(currentLang);
+});
 
 document.addEventListener('DOMContentLoaded', loadAccount);

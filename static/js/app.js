@@ -60,12 +60,12 @@ function formatUSDPlain(val) {
 
 function statusOk() {
     const el = document.getElementById('status-indicator');
-    if (el) el.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-green-400 mr-1"></span>Connected';
+    if (el) el.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-green-400 mr-1"></span><span data-i18n="connected">${t('connected')}</span>`;
 }
 
 function statusErr(msg) {
     const el = document.getElementById('status-indicator');
-    if (el) el.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-red-400 mr-1"></span>${msg || 'Error'}`;
+    if (el) el.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-red-400 mr-1"></span>${msg || t('error')}`;
 }
 
 // Initialize charts with dark theme

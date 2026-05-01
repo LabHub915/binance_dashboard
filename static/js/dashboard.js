@@ -4,6 +4,13 @@ let equityChart = null;
 let assetChart = null;
 let pnlTrendChart = null;
 
+// Cache last data for re-render on language change
+let lastPerfData = null;
+let lastCalData = null;
+let lastPositions = null;
+let lastTrades = null;
+let lastAssets = null;
+
 async function loadDashboard() {
     try {
         const [acctRes, posRes, calRes, tradesRes, perfRes] = await Promise.all([
@@ -15,26 +22,31 @@ async function loadDashboard() {
         ]);
 
         if (acctRes.success) {
+            lastAssets = acctRes.data.assets || [];
             renderStats(acctRes.data);
-            renderAssetChart(acctRes.data.assets || []);
+            renderAssetChart(lastAssets);
         } else {
             statusErr('Account API failed');
         }
 
         if (posRes.success) {
+            lastPositions = posRes.data;
             document.getElementById('stat-positions').textContent = posRes.data.length;
             renderPositionsTable(posRes.data);
         }
 
         if (calRes.success && calRes.data.length > 0) {
-            renderPnlTrend(calRes.data.slice(-30));
+            lastCalData = calRes.data.slice(-30);
+            renderPnlTrend(lastCalData);
         }
 
         if (tradesRes.success) {
+            lastTrades = tradesRes.data;
             renderRecentTrades(tradesRes.data);
         }
 
         if (perfRes.success) {
+            lastPerfData = perfRes.data;
             renderPerformance(perfRes.data);
             if (perfRes.data.equityCurve && perfRes.data.equityCurve.length > 0) {
                 renderEquityCurve(perfRes.data);
@@ -46,6 +58,22 @@ async function loadDashboard() {
         statusErr(e.message);
     }
 }
+
+// Re-render charts on language change
+window.addEventListener('langchange', () => {
+    if (lastPerfData) {
+        renderPerformance(lastPerfData);
+        if (lastPerfData.equityCurve && lastPerfData.equityCurve.length > 0) {
+            renderEquityCurve(lastPerfData);
+        }
+    }
+    if (lastAssets) renderAssetChart(lastAssets);
+    if (lastCalData) renderPnlTrend(lastCalData);
+    if (lastPositions) renderPositionsTable(lastPositions);
+    if (lastTrades) renderRecentTrades(lastTrades);
+    // Re-apply i18n text
+    setLang(currentLang);
+});
 
 function renderPerformance(data) {
     document.getElementById('perf-deposited').textContent = formatUSDPlain(data.netDeposited);
@@ -71,20 +99,24 @@ function renderEquityCurve(data) {
     // Reference line for net deposited
     const netLine = curve.map(() => data.netDeposited);
 
+    const eqName = t('chart_equity_series');
+    const pkName = t('chart_peak_series');
+    const niName = t('chart_net_invested');
+
     equityChart.setOption({
         tooltip: {
             trigger: 'axis',
             formatter: (params) => {
-                const bal = params.find(p => p.seriesName === 'Equity');
-                const pk = params.find(p => p.seriesName === 'Peak');
+                const bal = params.find(p => p.seriesName === eqName);
+                const pk = params.find(p => p.seriesName === pkName);
                 return `${params[0].axisValue}<br/>
-                    Equity: $${bal ? bal.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}<br/>
-                    Peak: $${pk ? pk.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}
+                    ${eqName}: $${bal ? bal.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}<br/>
+                    ${pkName}: $${pk ? pk.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}
                 `;
             },
         },
         legend: {
-            data: ['Equity', 'Peak', 'Net Invested'],
+            data: [eqName, pkName, niName],
             textStyle: { color: '#94a3b8' },
             bottom: 0,
         },
@@ -102,7 +134,7 @@ function renderEquityCurve(data) {
         },
         series: [
             {
-                name: 'Equity',
+                name: eqName,
                 type: 'line',
                 data: balances,
                 smooth: true,
@@ -117,7 +149,7 @@ function renderEquityCurve(data) {
                 },
             },
             {
-                name: 'Peak',
+                name: pkName,
                 type: 'line',
                 data: peaks,
                 step: 'end',
@@ -126,7 +158,7 @@ function renderEquityCurve(data) {
                 symbol: 'none',
             },
             {
-                name: 'Net Invested',
+                name: niName,
                 type: 'line',
                 data: netLine,
                 lineStyle: { color: '#f59e0b', width: 1, type: 'dotted' },
@@ -193,17 +225,20 @@ function renderPnlTrend(data) {
     let cumulative = 0;
     const cumValues = values.map(v => { cumulative += v; return +cumulative.toFixed(2); });
 
+    const dailyName = t('chart_daily');
+    const cumName = t('chart_cumulative');
+
     pnlTrendChart.setOption({
         tooltip: {
             trigger: 'axis',
             formatter: (params) => {
                 const daily = params[0].value;
                 const cum = params[1].value;
-                return `${params[0].axisValue}<br/>Daily: ${daily >= 0 ? '+' : ''}$${daily.toFixed(2)}<br/>Cumulative: $${cum.toFixed(2)}`;
+                return `${params[0].axisValue}<br/>${dailyName}: ${daily >= 0 ? '+' : ''}$${daily.toFixed(2)}<br/>${cumName}: $${cum.toFixed(2)}`;
             },
         },
         legend: {
-            data: ['Daily PNL', 'Cumulative'],
+            data: [dailyName, cumName],
             textStyle: { color: '#94a3b8' },
             bottom: 0,
         },
@@ -221,7 +256,7 @@ function renderPnlTrend(data) {
         },
         series: [
             {
-                name: 'Daily PNL',
+                name: dailyName,
                 type: 'bar',
                 data: values,
                 itemStyle: {
@@ -230,7 +265,7 @@ function renderPnlTrend(data) {
                 },
             },
             {
-                name: 'Cumulative',
+                name: cumName,
                 type: 'line',
                 data: cumValues,
                 smooth: true,
@@ -245,13 +280,13 @@ function renderPnlTrend(data) {
 function renderRecentTrades(trades) {
     const tbody = document.getElementById('recent-trades');
     if (trades.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500">No trades found</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-500">${t('no_trades')}</td></tr>`;
         return;
     }
     tbody.innerHTML = trades.map(t => `
         <tr>
             <td class="py-2 font-medium">${t.symbol}</td>
-            <td class="py-2"><span class="${t.side === 'BUY' ? 'text-green-400' : 'text-red-400'}">${t.side}</span></td>
+            <td class="py-2"><span class="${t.side === 'BUY' ? 'text-green-400' : 'text-red-400'}">${t.side === 'BUY' ? t('buy') : t('sell')}</span></td>
             <td class="py-2">$${t.price.toFixed(t.price < 1 ? 6 : 2)}</td>
             <td class="py-2">${t.qty}</td>
             <td class="py-2">${formatUSD(t.realizedPnl)}</td>
@@ -262,15 +297,16 @@ function renderRecentTrades(trades) {
 function renderPositionsTable(positions) {
     const tbody = document.getElementById('recent-positions');
     if (positions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500">No open positions</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-500">${t('no_positions')}</td></tr>`;
         return;
     }
     tbody.innerHTML = positions.map(p => {
-        const side = p.positionAmt > 0 ? 'LONG' : 'SHORT';
+        const isLong = p.positionAmt > 0;
+        const side = isLong ? t('long') : t('short');
         return `
             <tr>
                 <td class="py-2 font-medium">${p.symbol}</td>
-                <td class="py-2"><span class="${side === 'LONG' ? 'text-green-400' : 'text-red-400'}">${side}</span></td>
+                <td class="py-2"><span class="${isLong ? 'text-green-400' : 'text-red-400'}">${side}</span></td>
                 <td class="py-2">${Math.abs(p.positionAmt)}</td>
                 <td class="py-2">$${p.entryPrice.toFixed(4)}</td>
                 <td class="py-2">$${p.markPrice.toFixed(4)}</td>

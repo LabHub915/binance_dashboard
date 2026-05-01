@@ -1,6 +1,7 @@
 // PNL Calendar page with ECharts calendar heatmap
 
 let calendarChart = null;
+let lastCalendarData = null;
 
 async function loadCalendar() {
     const params = new URLSearchParams();
@@ -16,17 +17,21 @@ async function loadCalendar() {
             return;
         }
 
-        const data = res.data;
-        renderStats(data);
-        renderCalendarChart(data);
+        lastCalendarData = res.data;
+        renderCalendar();
         statusOk();
     } catch (e) {
         statusErr(e.message);
     }
 }
 
+function renderCalendar() {
+    renderStats(lastCalendarData);
+    renderCalendarChart(lastCalendarData);
+}
+
 function renderStats(data) {
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         document.getElementById('stat-total-pnl').textContent = '--';
         document.getElementById('stat-best-day').textContent = '--';
         document.getElementById('stat-worst-day').textContent = '--';
@@ -53,14 +58,13 @@ function renderCalendarChart(data) {
     }
     if (!calendarChart) return;
 
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         calendarChart.setOption({
             title: { text: 'No PNL data available', left: 'center', top: 'center', textStyle: { color: '#64748b', fontSize: 14 } },
         });
         return;
     }
 
-    // Find max absolute value for symmetric color scale
     let maxAbs = 0;
     data.forEach(d => { const a = Math.abs(d.pnl); if (a > maxAbs) maxAbs = a; });
     maxAbs = Math.max(maxAbs, 1);
@@ -118,5 +122,10 @@ function renderCalendarChart(data) {
         }],
     });
 }
+
+window.addEventListener('langchange', () => {
+    if (lastCalendarData) renderCalendar();
+    setLang(currentLang);
+});
 
 document.addEventListener('DOMContentLoaded', loadCalendar);

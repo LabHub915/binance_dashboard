@@ -4,58 +4,58 @@
 
 {% block content %}
 <div class="mb-8">
-    <h2 class="text-3xl font-bold gradient-text mb-1">Order History</h2>
-    <p class="text-slate-400">All order records with filtering</p>
+    <h2 class="text-3xl font-bold gradient-text mb-1" data-i18n="orders_title">Order History</h2>
+    <p class="text-slate-400" data-i18n="orders_desc">All order records with filtering</p>
 </div>
 
 <div class="glass-card p-6 mb-6">
     <div class="flex flex-wrap gap-4 items-end">
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Symbol</label>
-            <input type="text" id="filter-symbol" placeholder="e.g. BTCUSDT" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-40">
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="orders_filter_symbol">Symbol</label>
+            <input type="text" id="filter-symbol" data-i18n-placeholder="orders_filter_symbol" placeholder="e.g. BTCUSDT" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-40">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Start Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="orders_filter_start">Start Date</label>
             <input type="date" id="filter-start" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">End Date</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="orders_filter_end">End Date</label>
             <input type="date" id="filter-end" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-            <label class="block text-xs text-slate-400 mb-1">Limit</label>
+            <label class="block text-xs text-slate-400 mb-1" data-i18n="orders_filter_limit">Limit</label>
             <select id="filter-limit" class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
                 <option value="20">20</option>
                 <option value="50" selected>50</option>
                 <option value="100">100</option>
             </select>
         </div>
-        <button onclick="loadOrders()" class="btn-primary text-white text-sm">Apply</button>
+        <button onclick="loadOrders()" class="btn-primary text-white text-sm" data-i18n="orders_apply">Apply</button>
     </div>
 </div>
 
 <div class="glass-card p-6">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Orders <span id="order-count" class="text-sm text-slate-400"></span></h3>
+        <h3 class="text-lg font-semibold">Order History <span id="order-count" class="text-sm text-slate-400"></span></h3>
     </div>
     <div class="overflow-x-auto">
         <table class="data-table w-full text-sm">
             <thead>
                 <tr class="text-left">
-                    <th class="py-2">Time</th>
-                    <th class="py-2">Order ID</th>
-                    <th class="py-2">Symbol</th>
-                    <th class="py-2">Type</th>
-                    <th class="py-2">Side</th>
-                    <th class="py-2">Price</th>
-                    <th class="py-2">Qty / Executed</th>
-                    <th class="py-2">Avg Price</th>
-                    <th class="py-2">Status</th>
+                    <th class="py-2" data-i18n="orders_time">Time</th>
+                    <th class="py-2" data-i18n="orders_id">Order ID</th>
+                    <th class="py-2" data-i18n="table_symbol">Symbol</th>
+                    <th class="py-2" data-i18n="orders_type">Type</th>
+                    <th class="py-2" data-i18n="orders_side">Side</th>
+                    <th class="py-2" data-i18n="orders_price">Price</th>
+                    <th class="py-2" data-i18n="orders_qty_exec">Qty / Executed</th>
+                    <th class="py-2" data-i18n="orders_avg_price">Avg Price</th>
+                    <th class="py-2" data-i18n="orders_status">Status</th>
                 </tr>
             </thead>
             <tbody id="orders-table">
                 <tr><td colspan="9" class="text-center py-8 text-slate-500">
-                    <div class="spinner mx-auto mb-3"></div>Loading...
+                    <div class="spinner mx-auto mb-3"></div><span data-i18n="loading">Loading...</span>
                 </td></tr>
             </tbody>
         </table>

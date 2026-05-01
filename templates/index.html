@@ -4,52 +4,52 @@
 
 {% block content %}
 <div class="mb-8">
-    <h2 class="text-3xl font-bold gradient-text mb-1">Dashboard</h2>
-    <p class="text-slate-400">Overview of your Binance Futures account</p>
+    <h2 class="text-3xl font-bold gradient-text mb-1" data-i18n="overview_title">Dashboard</h2>
+    <p class="text-slate-400" data-i18n="overview_desc">Overview of your Binance Futures account</p>
 </div>
 
 <!-- Performance Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="perf-cards">
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Net Deposited</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="perf_net_deposited">Net Deposited</p>
         <p class="text-2xl font-bold" id="perf-deposited">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Total PNL</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="perf_total_pnl">Total PNL</p>
         <p class="text-2xl font-bold" id="perf-total-pnl">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">ROI</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="perf_roi">ROI</p>
         <p class="text-2xl font-bold" id="perf-roi">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Max Drawdown</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="perf_max_dd">Max Drawdown</p>
         <p class="text-2xl font-bold loss" id="perf-dd">--</p>
     </div>
 </div>
 
 <!-- Equity Curve -->
 <div class="glass-card p-6 mb-8">
-    <h3 class="text-lg font-semibold mb-4">Equity Curve</h3>
+    <h3 class="text-lg font-semibold mb-4" data-i18n="chart_equity">Equity Curve</h3>
     <div id="chart-equity" style="height: 380px;"></div>
 </div>
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stats-cards">
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Total Margin</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="stats_margin">Total Margin</p>
         <p class="text-2xl font-bold" id="stat-margin">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Available Balance</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="stats_available">Available Balance</p>
         <p class="text-2xl font-bold" id="stat-available">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Unrealized PNL</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="stats_unrealized">Unrealized PNL</p>
         <p class="text-2xl font-bold" id="stat-unrealized">--</p>
     </div>
     <div class="glass-card p-6">
-        <p class="text-slate-400 text-sm mb-2">Open Positions</p>
+        <p class="text-slate-400 text-sm mb-2" data-i18n="stats_positions">Open Positions</p>
         <p class="text-2xl font-bold" id="stat-positions">--</p>
     </div>
 </div>
@@ -57,11 +57,11 @@
 <!-- Charts Row -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <div class="glass-card p-6">
-        <h3 class="text-lg font-semibold mb-4">Asset Allocation</h3>
+        <h3 class="text-lg font-semibold mb-4" data-i18n="chart_assets">Asset Allocation</h3>
         <div id="chart-assets" style="height: 320px;"></div>
     </div>
     <div class="glass-card p-6">
-        <h3 class="text-lg font-semibold mb-4">Daily PNL</h3>
+        <h3 class="text-lg font-semibold mb-4" data-i18n="chart_daily_pnl">Daily PNL</h3>
         <div id="chart-pnl-trend" style="height: 320px;"></div>
     </div>
 </div>
@@ -69,16 +69,16 @@
 <!-- Recent Activity -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="glass-card p-6">
-        <h3 class="text-lg font-semibold mb-4">Recent Trades</h3>
+        <h3 class="text-lg font-semibold mb-4" data-i18n="recent_trades">Recent Trades</h3>
         <div class="overflow-x-auto">
             <table class="data-table w-full text-sm">
                 <thead>
                     <tr class="text-left">
-                        <th class="py-2">Symbol</th>
-                        <th class="py-2">Side</th>
-                        <th class="py-2">Price</th>
-                        <th class="py-2">Qty</th>
-                        <th class="py-2">PNL</th>
+                        <th class="py-2" data-i18n="table_symbol">Symbol</th>
+                        <th class="py-2" data-i18n="table_side">Side</th>
+                        <th class="py-2" data-i18n="table_price">Price</th>
+                        <th class="py-2" data-i18n="table_qty">Qty</th>
+                        <th class="py-2" data-i18n="table_pnl">PNL</th>
                     </tr>
                 </thead>
                 <tbody id="recent-trades"></tbody>
@@ -86,17 +86,17 @@
         </div>
     </div>
     <div class="glass-card p-6">
-        <h3 class="text-lg font-semibold mb-4">Current Positions</h3>
+        <h3 class="text-lg font-semibold mb-4" data-i18n="current_positions">Current Positions</h3>
         <div class="overflow-x-auto">
             <table class="data-table w-full text-sm">
                 <thead>
                     <tr class="text-left">
-                        <th class="py-2">Symbol</th>
-                        <th class="py-2">Side</th>
-                        <th class="py-2">Size</th>
-                        <th class="py-2">Entry</th>
-                        <th class="py-2">Mark</th>
-                        <th class="py-2">PNL</th>
+                        <th class="py-2" data-i18n="table_symbol">Symbol</th>
+                        <th class="py-2" data-i18n="table_side">Side</th>
+                        <th class="py-2" data-i18n="table_size">Size</th>
+                        <th class="py-2" data-i18n="table_entry">Entry</th>
+                        <th class="py-2" data-i18n="table_mark">Mark</th>
+                        <th class="py-2" data-i18n="table_pnl">PNL</th>
                     </tr>
                 </thead>
                 <tbody id="recent-positions"></tbody>
