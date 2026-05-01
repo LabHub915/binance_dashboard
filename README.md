@@ -40,6 +40,7 @@ BINANCE_API_KEY=your_api_key_here
 BINANCE_API_SECRET=your_api_secret_here
 BINANCE_TESTNET=true
 FLASK_SECRET_KEY=change-this-in-production
+BASIC_AUTH_ENABLED=false
 BASIC_AUTH_USERNAME=admin
 BASIC_AUTH_PASSWORD=change-me
 ```
@@ -50,10 +51,11 @@ BASIC_AUTH_PASSWORD=change-me
 | `BINANCE_API_SECRET` | Yes | — | API secret paired with the key above |
 | `BINANCE_TESTNET` | No | `true` | `true` = Binance Futures Testnet (no real funds), `false` = live mainnet |
 | `FLASK_SECRET_KEY` | No | `dev-secret-key` | Flask session signing key, change to a random string in production |
-| `BASIC_AUTH_USERNAME` | No | (empty) | Username for HTTP Basic Auth. Leave empty to disable authentication |
-| `BASIC_AUTH_PASSWORD` | No | (empty) | Password for HTTP Basic Auth. Only effective when username is also set |
+| `BASIC_AUTH_ENABLED` | No | `false` | `true` = require login, `false` = open access |
+| `BASIC_AUTH_USERNAME` | No | (empty) | Login username (only used when `BASIC_AUTH_ENABLED=true`) |
+| `BASIC_AUTH_PASSWORD` | No | (empty) | Login password (only used when `BASIC_AUTH_ENABLED=true`) |
 
-> **Auth behavior:** When both `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` are set, the browser will prompt for credentials before accessing any page or API. If left empty, all routes are open — suitable for local dev behind a firewall.
+> **Auth behavior:** Set `BASIC_AUTH_ENABLED=true` to require HTTP Basic Authentication on all routes. The browser will prompt for the credentials set in `BASIC_AUTH_USERNAME` / `BASIC_AUTH_PASSWORD`. Leave `false` for local dev behind a firewall.
 
 ### 3. Run Locally
 

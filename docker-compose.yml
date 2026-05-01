@@ -11,11 +11,12 @@ services:
       - BINANCE_API_SECRET=${BINANCE_API_SECRET}
       - BINANCE_TESTNET=${BINANCE_TESTNET:-true}
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-change-this-in-production}
+      - BASIC_AUTH_ENABLED=${BASIC_AUTH_ENABLED:-false}
       - BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME:-admin}
       - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD:-change-me}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "-u", "${BASIC_AUTH_USERNAME:-admin}:${BASIC_AUTH_PASSWORD:-change-me}", "http://localhost:5000/"]
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://localhost:5000/ | grep -qE '^(200|401)$'"]
       interval: 30s
       timeout: 10s
       retries: 3

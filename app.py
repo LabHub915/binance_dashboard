@@ -23,6 +23,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key")
 
+BASIC_AUTH_ENABLED = os.getenv("BASIC_AUTH_ENABLED", "false").lower() == "true"
 BASIC_AUTH_USER = os.getenv("BASIC_AUTH_USERNAME", "")
 BASIC_AUTH_PASS = os.getenv("BASIC_AUTH_PASSWORD", "")
 
@@ -41,7 +42,7 @@ def authenticate():
 def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not BASIC_AUTH_USER:
+        if not BASIC_AUTH_ENABLED:
             return f(*args, **kwargs)
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
