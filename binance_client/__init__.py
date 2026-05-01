@@ -1,4 +1,5 @@
 import os
+import time as _time
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
@@ -172,6 +173,9 @@ def get_daily_pnl(
 ) -> list:
     """Aggregate realized PNL by day for the calendar view."""
     try:
+        if start_time is None:
+            start_time = int((_time.time() - 90 * 24 * 60 * 60) * 1000)
+
         incomes = client.futures_income_history(
             incomeType="REALIZED_PNL",
             startTime=start_time,
@@ -207,6 +211,9 @@ def get_all_income_by_day(
 ) -> list:
     """Aggregate ALL income types by day (REALIZED_PNL + FUNDING_FEE + COMMISSION)."""
     try:
+        if start_time is None:
+            start_time = int((_time.time() - 90 * 24 * 60 * 60) * 1000)
+
         incomes = client.futures_income_history(
             startTime=start_time,
             endTime=end_time,
@@ -239,10 +246,8 @@ def get_futures_transactions(
 ) -> list:
     """Get futures wallet deposit/withdrawal history (transfers between spot and futures)."""
     try:
-        import time as _time
-
         if start_time is None:
-            start_time = int((_time.time() - 365 * 24 * 60 * 60) * 1000)
+            start_time = int((_time.time() - 90 * 24 * 60 * 60) * 1000)
 
         txs = client.transfer_history(
             startTime=start_time,
