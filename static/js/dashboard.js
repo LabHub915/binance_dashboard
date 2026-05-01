@@ -1,15 +1,17 @@
 // Dashboard page - overview with charts
 
+let equityChart = null;
 let assetChart = null;
 let pnlTrendChart = null;
 
 async function loadDashboard() {
     try {
-        const [acctRes, posRes, calRes, tradesRes] = await Promise.all([
+        const [acctRes, posRes, calRes, tradesRes, perfRes] = await Promise.all([
             API.get('/api/account'),
             API.get('/api/positions'),
             API.get('/api/calendar?limit=365'),
             API.get('/api/trades?limit=10'),
+            API.get('/api/performance'),
         ]);
 
         if (acctRes.success) {
@@ -20,8 +22,7 @@ async function loadDashboard() {
         }
 
         if (posRes.success) {
-            const n = posRes.data.length;
-            document.getElementById('stat-positions').textContent = n;
+            document.getElementById('stat-positions').textContent = posRes.data.length;
             renderPositionsTable(posRes.data);
         }
 
@@ -33,18 +34,114 @@ async function loadDashboard() {
             renderRecentTrades(tradesRes.data);
         }
 
+        if (perfRes.success) {
+            renderPerformance(perfRes.data);
+            if (perfRes.data.equityCurve && perfRes.data.equityCurve.length > 0) {
+                renderEquityCurve(perfRes.data);
+            }
+        }
+
         statusOk();
     } catch (e) {
         statusErr(e.message);
     }
 }
 
+function renderPerformance(data) {
+    document.getElementById('perf-deposited').textContent = formatUSDPlain(data.netDeposited);
+    document.getElementById('perf-total-pnl').innerHTML = formatUSD(data.totalPnl);
+    const roi = data.roi;
+    const roiEl = document.getElementById('perf-roi');
+    roiEl.innerHTML = (roi >= 0 ? '+' : '') + roi.toFixed(2) + '%';
+    roiEl.className = 'text-2xl font-bold ' + (roi >= 0 ? 'profit' : 'loss');
+    document.getElementById('perf-dd').textContent = '-' + data.maxDrawdown.toFixed(2) + '%';
+}
+
+function renderEquityCurve(data) {
+    if (!equityChart) {
+        equityChart = initChart('chart-equity');
+    }
+    if (!equityChart) return;
+
+    const curve = data.equityCurve;
+    const dates = curve.map(d => d.date);
+    const balances = curve.map(d => d.balance);
+    const peaks = curve.map(d => d.peak);
+
+    // Reference line for net deposited
+    const netLine = curve.map(() => data.netDeposited);
+
+    equityChart.setOption({
+        tooltip: {
+            trigger: 'axis',
+            formatter: (params) => {
+                const bal = params.find(p => p.seriesName === 'Equity');
+                const pk = params.find(p => p.seriesName === 'Peak');
+                return `${params[0].axisValue}<br/>
+                    Equity: $${bal ? bal.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}<br/>
+                    Peak: $${pk ? pk.value.toLocaleString(undefined, {minimumFractionDigits: 2}) : '--'}
+                `;
+            },
+        },
+        legend: {
+            data: ['Equity', 'Peak', 'Net Invested'],
+            textStyle: { color: '#94a3b8' },
+            bottom: 0,
+        },
+        grid: { left: 70, right: 30, top: 20, bottom: 40 },
+        xAxis: {
+            type: 'category',
+            data: dates,
+            axisLine: { lineStyle: { color: '#334155' } },
+            axisLabel: { color: '#64748b', fontSize: 10, rotate: 45, interval: Math.max(Math.floor(dates.length / 10), 0) },
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: '#64748b', formatter: (v) => '$' + (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(0)) },
+            splitLine: { lineStyle: { color: '#1e293b' } },
+        },
+        series: [
+            {
+                name: 'Equity',
+                type: 'line',
+                data: balances,
+                smooth: true,
+                lineStyle: { color: '#3b82f6', width: 2 },
+                itemStyle: { color: '#3b82f6' },
+                symbol: 'none',
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(59, 130, 246, 0.3)' },
+                        { offset: 1, color: 'rgba(59, 130, 246, 0.02)' },
+                    ]),
+                },
+            },
+            {
+                name: 'Peak',
+                type: 'line',
+                data: peaks,
+                step: 'end',
+                lineStyle: { color: '#10b981', width: 1, type: 'dashed' },
+                itemStyle: { color: '#10b981' },
+                symbol: 'none',
+            },
+            {
+                name: 'Net Invested',
+                type: 'line',
+                data: netLine,
+                lineStyle: { color: '#f59e0b', width: 1, type: 'dotted' },
+                itemStyle: { color: '#f59e0b' },
+                symbol: 'none',
+            },
+        ],
+    });
+}
+
 function renderStats(data) {
     document.getElementById('stat-margin').textContent = formatUSDPlain(data.totalMarginBalance);
     document.getElementById('stat-available').textContent = formatUSDPlain(data.availableBalance);
-    const upnl = data.totalUnrealizedProfit;
     const el = document.getElementById('stat-unrealized');
-    el.innerHTML = formatUSD(upnl);
+    el.innerHTML = formatUSD(data.totalUnrealizedProfit);
 }
 
 function renderAssetChart(assets) {
@@ -182,5 +279,12 @@ function renderPositionsTable(positions) {
         `;
     }).join('');
 }
+
+// Responsive resize
+window.addEventListener('resize', () => {
+    if (equityChart) equityChart.resize();
+    if (assetChart) assetChart.resize();
+    if (pnlTrendChart) pnlTrendChart.resize();
+});
 
 document.addEventListener('DOMContentLoaded', loadDashboard);

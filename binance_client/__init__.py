@@ -180,7 +180,6 @@ def get_daily_pnl(
         )
         daily = {}
         for inc in incomes:
-            # Binance time is in ms
             date_str = inc.get("date_str")
             if not date_str:
                 from datetime import datetime
@@ -195,6 +194,68 @@ def get_daily_pnl(
             {"date": date, "pnl": round(pnl, 2)}
             for date, pnl in sorted(daily.items())
         ]
+        return result
+    except BinanceAPIException as e:
+        raise e
+
+
+def get_all_income_by_day(
+    client: Client,
+    start_time: int = None,
+    end_time: int = None,
+    limit: int = 1000,
+) -> list:
+    """Aggregate ALL income types by day (REALIZED_PNL + FUNDING_FEE + COMMISSION)."""
+    try:
+        incomes = client.futures_income_history(
+            startTime=start_time,
+            endTime=end_time,
+            limit=limit,
+        )
+        daily = {}
+        for inc in incomes:
+            from datetime import datetime
+
+            dt = datetime.fromtimestamp(inc["time"] / 1000)
+            date_str = dt.strftime("%Y-%m-%d")
+
+            pnl = float(inc["income"])
+            daily[date_str] = daily.get(date_str, 0) + pnl
+
+        result = [
+            {"date": date, "pnl": round(pnl, 2)}
+            for date, pnl in sorted(daily.items())
+        ]
+        return result
+    except BinanceAPIException as e:
+        raise e
+
+
+def get_futures_transactions(
+    client: Client,
+    start_time: int = None,
+    end_time: int = None,
+    limit: int = 100,
+) -> list:
+    """Get futures wallet deposit/withdrawal history (transfers between spot and futures)."""
+    try:
+        txs = client.transfer_history(
+            startTime=start_time,
+            endTime=end_time,
+            limit=limit,
+        )
+        result = []
+        for tx in txs.get("rows", []):
+            result.append(
+                {
+                    "asset": tx["asset"],
+                    "amount": float(tx["amount"]),
+                    "type": tx["type"],  # "IN" = deposit into futures, "OUT" = withdraw from futures
+                    "status": tx["status"],
+                    "time": tx["timestamp"],  # ms
+                    "tranId": str(tx.get("tranId", "")),
+                }
+            )
         return result
     except BinanceAPIException as e:
         raise e

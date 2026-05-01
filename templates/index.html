@@ -8,6 +8,32 @@
     <p class="text-slate-400">Overview of your Binance Futures account</p>
 </div>
 
+<!-- Performance Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="perf-cards">
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Net Deposited</p>
+        <p class="text-2xl font-bold" id="perf-deposited">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Total PNL</p>
+        <p class="text-2xl font-bold" id="perf-total-pnl">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">ROI</p>
+        <p class="text-2xl font-bold" id="perf-roi">--</p>
+    </div>
+    <div class="glass-card p-6">
+        <p class="text-slate-400 text-sm mb-2">Max Drawdown</p>
+        <p class="text-2xl font-bold loss" id="perf-dd">--</p>
+    </div>
+</div>
+
+<!-- Equity Curve -->
+<div class="glass-card p-6 mb-8">
+    <h3 class="text-lg font-semibold mb-4">Equity Curve</h3>
+    <div id="chart-equity" style="height: 380px;"></div>
+</div>
+
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stats-cards">
     <div class="glass-card p-6">
@@ -35,7 +61,7 @@
         <div id="chart-assets" style="height: 320px;"></div>
     </div>
     <div class="glass-card p-6">
-        <h3 class="text-lg font-semibold mb-4">PNL Trend (7 Days)</h3>
+        <h3 class="text-lg font-semibold mb-4">Daily PNL</h3>
         <div id="chart-pnl-trend" style="height: 320px;"></div>
     </div>
 </div>
